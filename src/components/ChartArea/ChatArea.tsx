@@ -1,27 +1,23 @@
-import { Message } from "@ai-sdk/react";
 import { Bot } from "lucide-react";
 import DotLoading from "../DotLoading";
 import MessageItem from "./MessageItem";
 import ChatInput from "./ChatInput";
-import { useChatLogic } from "./userChart";
+import useChatArea from "./useChatArea";
+import useChatCustom from "@/hooks/useChat";
 
 interface ChatAreaProps {
   id?: string;
-  initialMessages?: Message[];
 }
 
-export default function ChatArea({ id, initialMessages }: ChatAreaProps = {}) {
-  const {
-    messages,
-    input,
-    handleInputChange,
-    handleSubmit,
-    isLoading,
-    messageDivRef,
-    onScroll,
-    throttleOnTypedChar,
-    isDisableTyping,
-  } = useChatLogic({ id, initialMessages });
+export default function ChatArea({ id }: ChatAreaProps = {}) {
+  const { messageDivRef, onScroll, throttleOnTypedChar } = useChatArea();
+
+  const { messages, input, handleInputChange, handleSubmit, status } =
+    useChatCustom({
+      id,
+    });
+
+  const isLoading = status === "streaming" || status === "submitted";
 
   return (
     <main className="flex flex-col w-full h-screen p-4">
@@ -32,21 +28,10 @@ export default function ChatArea({ id, initialMessages }: ChatAreaProps = {}) {
         onScroll={onScroll}
       >
         <div className="max-w-4xl mx-auto px-4">
-          {isDisableTyping && (
-            <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
-              <LoadingMessage
-                message="Processing messages..."
-                showSkeleton={false}
-              />
-            </div>
-          )}
           {messages.map((message) => (
-            <div
-              key={message.id}
-              style={{ display: isDisableTyping ? "none" : "block" }}
-            >
+            <div key={message.id} style={{ display: false ? "none" : "block" }}>
               <MessageItem
-                disableTyping={isDisableTyping}
+                disableTyping={!isLoading}
                 key={message.id}
                 message={message}
                 onTypedChar={throttleOnTypedChar}

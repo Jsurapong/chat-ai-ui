@@ -2,6 +2,7 @@ import { useChat } from "@ai-sdk/react";
 import { createIdGenerator } from "ai";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Message } from "@ai-sdk/react";
+import useInitialMessages from "@/hooks/useInitialMessages";
 
 function throttle(fn: (...args: any[]) => void, delay: number) {
   let lastTime = 0;
@@ -15,37 +16,8 @@ function throttle(fn: (...args: any[]) => void, delay: number) {
   };
 }
 
-interface UseChatLogicProps {
-  id?: string;
-  initialMessages?: Message[];
-}
-
-export function useChatLogic({ id, initialMessages }: UseChatLogicProps) {
-  const { messages, input, handleInputChange, handleSubmit, status } = useChat({
-    id,
-    initialMessages,
-    generateId: createIdGenerator({
-      prefix: "msgc",
-      size: 16,
-    }),
-    experimental_prepareRequestBody({ messages, id }) {
-      return { message: messages[messages.length - 1], id };
-    },
-  });
-
-  const [isDisableTyping, setIsDisableTyping] = useState(true);
-
-  useEffect(() => {
-    if (initialMessages && initialMessages.length > 0) {
-      setTimeout(() => {
-        setIsDisableTyping(false);
-        console.log("Initial messages loaded.");
-      }, 2000); // Simulate loading delay
-    }
-  }, [initialMessages]);
-
+function useChatArea() {
   const messageDivRef = useRef<HTMLDivElement>(null!);
-  const isLoading = status === "streaming" || status === "submitted";
 
   const scrollCacheRef = useRef<{
     type: "manual" | "auto";
@@ -81,14 +53,10 @@ export function useChatLogic({ id, initialMessages }: UseChatLogicProps) {
   }, []);
 
   return {
-    messages,
-    input,
-    handleInputChange,
-    handleSubmit,
-    isLoading,
     messageDivRef,
     onScroll,
     throttleOnTypedChar,
-    isDisableTyping,
   };
 }
+
+export default useChatArea;

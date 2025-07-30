@@ -1,13 +1,12 @@
 import {} from "next/navigation";
 import { useRouter } from "next/navigation";
 import { MessageSquarePlus } from "lucide-react";
+import useRecentChat from "@/hooks/useRecentChat";
 
-export default function Sidebar({
-  history,
-}: {
-  history: { id: string; title: string }[];
-}) {
+export default function Sidebar() {
   const router = useRouter();
+
+  const { history } = useRecentChat();
 
   return (
     <aside className="hidden md:flex flex-col w-64 bg-gray-50 dark:bg-gray-800 p-2">
