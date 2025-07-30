@@ -11,11 +11,19 @@ interface ChatAreaProps {
   handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   status: "ready" | "streaming" | "submitted" | "error";
+  handleStop: () => void; // Function to handle stopping the message generation
 }
 
 export default function ChatArea(props: ChatAreaProps) {
   const { messageDivRef, throttleOnTypedChar } = useChatArea();
-  const { messages, input, handleInputChange, handleSubmit, status } = props;
+  const {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    handleStop,
+    status,
+  } = props;
 
   const isLoading = status === "streaming" || status === "submitted";
 
@@ -50,6 +58,7 @@ export default function ChatArea(props: ChatAreaProps) {
         isLoading={isLoading}
         onInputChange={handleInputChange}
         onSubmit={handleSubmit}
+        onStop={handleStop}
       />
     </main>
   );

@@ -12,17 +12,18 @@ const useChatCustom = ({ id }: { id?: string }) => {
   const { initialMessages } = useInitialMessages({ id });
   const { recentMessages, refreshRecentMessages } = useRecentChat();
 
-  const { messages, input, handleInputChange, handleSubmit, status } = useChat({
-    id,
-    initialMessages,
-    generateId: createIdGenerator({
-      prefix: "msgc",
-      size: 16,
-    }),
-    experimental_prepareRequestBody({ messages, id }) {
-      return { message: messages[messages.length - 1], id };
-    },
-  });
+  const { messages, input, handleInputChange, handleSubmit, status, stop } =
+    useChat({
+      id,
+      initialMessages,
+      generateId: createIdGenerator({
+        prefix: "msgc",
+        size: 16,
+      }),
+      experimental_prepareRequestBody({ messages, id }) {
+        return { message: messages[messages.length - 1], id };
+      },
+    });
 
   useEffect(() => {
     if (status === "ready") {
@@ -44,6 +45,7 @@ const useChatCustom = ({ id }: { id?: string }) => {
     input,
     handleInputChange,
     handleSubmit: handleSubmitWrapper,
+    handleStop: stop,
     status,
   };
 };

@@ -16,6 +16,7 @@ function ChatPage({ id }: { id?: string }) {
     handleInputChange,
     handleSubmit,
     status,
+    handleStop,
   } = useChatCustom({ id });
 
   return (
@@ -26,6 +27,7 @@ function ChatPage({ id }: { id?: string }) {
 
         {/* Main Chat Area */}
         <ChatArea
+          handleStop={handleStop}
           messages={messages}
           input={input}
           handleInputChange={handleInputChange}
