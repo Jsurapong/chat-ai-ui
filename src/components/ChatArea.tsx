@@ -60,10 +60,8 @@ export default function ChatArea({
 
       // 自动滑动到最底部
       if (messageDiv) {
-        console.log({ messageDiv, a: messageDiv.scrollHeight });
         messageDiv.scrollTo({
           top: messageDiv.scrollHeight,
-
           behavior: "smooth",
         });
       }
@@ -73,10 +71,7 @@ export default function ChatArea({
   const onScroll = useMemo(() => {
     return throttle((e: React.UIEvent<HTMLDivElement>) => {
       // 如果是往上滚动，则说明是手动滚动，则需要停止自动向下滚动
-      console.log(
-        "onScroll",
-        e.currentTarget.scrollTop - scrollCacheRef.current.prevScrollTop
-      );
+
       if (e.currentTarget.scrollTop < scrollCacheRef.current.prevScrollTop) {
         scrollCacheRef.current.needAutoScroll = false;
       }
@@ -93,8 +88,7 @@ export default function ChatArea({
         onScroll={onScroll}
       >
         {/* Render messages */}
-
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto px-4">
           {messages.map((m) => {
             return (
               <div
@@ -102,20 +96,18 @@ export default function ChatArea({
                 className="flex gap-4 my-6 text-gray-800 dark:text-gray-100"
               >
                 <div>{m.role === "user" ? <User /> : <Bot />}</div>
-                <div className="ds-message-box">
-                  <div className="ds-message-list">
-                    <ConfigProvider locale={defaultLocale}>
-                      <DsMarkdown
-                        ref={markdownRef}
-                        interval={1}
-                        answerType="answer"
-                        onTypedChar={throttleOnTypedChar}
-                      >
-                        {m.content}
-                      </DsMarkdown>
-                    </ConfigProvider>
-                  </div>
-                </div>
+
+                <ConfigProvider locale={defaultLocale}>
+                  <DsMarkdown
+                    ref={markdownRef}
+                    interval={0}
+                    answerType="answer"
+                    onTypedChar={throttleOnTypedChar}
+                    disableTyping
+                  >
+                    {m.content}
+                  </DsMarkdown>
+                </ConfigProvider>
               </div>
             );
           })}
