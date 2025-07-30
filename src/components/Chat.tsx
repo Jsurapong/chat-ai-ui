@@ -1,10 +1,14 @@
 "use client";
 
 import Sidebar from "@/components/Sidebar";
-import ChatArea from "@/components/ChatArea";
+import ChatArea2 from "@/components/ChartArea2/ChatArea";
 
 import { Message, useChat } from "@ai-sdk/react";
 import { useAutoResume } from "@/hooks/use-auto-resume";
+
+import { ConfigProvider } from "ds-markdown";
+
+import defaultLocale from "ds-markdown/i18n/en";
 
 export default function Chat({
   id,
@@ -26,12 +30,14 @@ export default function Chat({
   });
 
   return (
-    <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
-      {/* Sidebar */}
-      <Sidebar history={history} />
+    <ConfigProvider locale={defaultLocale}>
+      <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
+        {/* Sidebar */}
+        <Sidebar history={history} />
 
-      {/* Main Chat Area */}
-      <ChatArea id={id} initialMessages={initialMessages} />
-    </div>
+        {/* Main Chat Area */}
+        <ChatArea2 id={id} initialMessages={initialMessages} />
+      </div>
+    </ConfigProvider>
   );
 }
