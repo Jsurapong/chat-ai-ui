@@ -5,14 +5,14 @@ import {
   appendClientMessage,
 } from "ai";
 import { openai } from "@ai-sdk/openai";
-import { loadChat, saveChat } from "@/tools/chat-store";
+import { chatStorage } from "@/storage/storageAdapter";
 
 export async function POST(req: Request) {
   // get the last message from the client:
   const { message, id } = await req.json();
 
   // load the previous messages from the server:
-  const previousMessages = await loadChat(id);
+  const previousMessages = await chatStorage.loadChat(id);
 
   const messages = appendClientMessage({
     messages: previousMessages,
@@ -25,13 +25,13 @@ export async function POST(req: Request) {
       "You are a code assistant that helps users with their coding questions.",
     messages,
     async onFinish({ response }) {
-      await saveChat({
+      await chatStorage.saveChat(
         id,
-        messages: appendResponseMessages({
+        appendResponseMessages({
           messages,
           responseMessages: response.messages,
-        }),
-      });
+        })
+      );
     },
     experimental_generateMessageId: createIdGenerator({
       prefix: "msgs",

@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getChatIds } from "@/tools/chat-store";
+import { chatStorage } from "@/storage/storageAdapter";
 
 export async function GET(request: NextRequest) {
   try {
-    const chatIds = await getChatIds();
+    const chatIds = await chatStorage.getChatIds();
     return NextResponse.json(chatIds, { status: 200 });
   } catch (error) {
     console.error("Error getting chat IDs:", error);
