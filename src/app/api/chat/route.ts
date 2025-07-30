@@ -21,7 +21,8 @@ export async function POST(req: Request) {
 
   const result = streamText({
     model: openai("o4-mini"),
-    system: "You are a helpful assistant.",
+    system:
+      "You are a code assistant that helps users with their coding questions.",
     messages,
     async onFinish({ response }) {
       await saveChat({
