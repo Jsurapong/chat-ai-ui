@@ -3,9 +3,12 @@ import useInitialMessages from "./useInitialMessages";
 import { createIdGenerator } from "ai";
 import useRecentChat from "./useRecentChat";
 import { useEffect } from "react";
-import { stat } from "fs";
+import { useParams, useRouter } from "next/navigation";
 
 const useChatCustom = ({ id }: { id?: string }) => {
+  const router = useRouter();
+  const params = useParams();
+
   const { initialMessages } = useInitialMessages({ id });
   const { recentMessages, refreshRecentMessages } = useRecentChat();
 
@@ -30,6 +33,9 @@ const useChatCustom = ({ id }: { id?: string }) => {
   const handleSubmitWrapper = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     handleSubmit(e);
+    if (!params?.id && id) {
+      router.replace(`/chat/${id}`);
+    }
   };
 
   return {

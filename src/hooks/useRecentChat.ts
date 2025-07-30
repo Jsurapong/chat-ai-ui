@@ -1,8 +1,8 @@
 import axios from "axios";
-import { debounce } from "lodash";
+import { debounce, orderBy } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-type HistoryItem = { id: string; title: string };
+type HistoryItem = { id: string; title: string; createdAt: string };
 
 const useRecentChat = () => {
   const [recentMessages, setRecentMessages] = useState<HistoryItem[]>([]);
@@ -31,7 +31,7 @@ const useRecentChat = () => {
   }, []);
 
   return {
-    recentMessages,
+    recentMessages: orderBy(recentMessages, ["createdAt"], ["desc"]),
     loading,
     refreshRecentMessages: debouncedLoadChatHistory,
   };

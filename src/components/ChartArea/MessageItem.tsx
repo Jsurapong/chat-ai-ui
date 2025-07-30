@@ -2,6 +2,7 @@ import { Bot, User } from "lucide-react";
 import { Message } from "@ai-sdk/react";
 import DsMarkdown, { type MarkdownRef } from "ds-markdown";
 import { useRef, memo, useCallback } from "react";
+import React from "react";
 
 interface MessageItemProps {
   message: Message;

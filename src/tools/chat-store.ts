@@ -1,7 +1,6 @@
 import { generateId, Message } from "ai";
 import { existsSync, mkdirSync } from "fs";
 import { writeFile, readFile } from "fs/promises";
-import { orderBy } from "lodash";
 import path from "path";
 
 export async function createChat(): Promise<string> {
@@ -53,11 +52,7 @@ export async function getChatIds(): Promise<Charts[]> {
     const filePath = path.join(chatDir, file);
     try {
       const content = await readFile(filePath, "utf8");
-      const messages: Message[] = orderBy(
-        JSON.parse(content),
-        "createdAt",
-        "asc"
-      );
+      const messages: Message[] = JSON.parse(content);
 
       if (messages.length === 0) continue;
 
