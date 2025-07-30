@@ -58,7 +58,6 @@ export default function ChatArea({
       if (!scrollCacheRef.current.needAutoScroll) return;
       const messageDiv = messageDivRef.current;
 
-      // 自动滑动到最底部
       if (messageDiv) {
         messageDiv.scrollTo({
           top: messageDiv.scrollHeight,
@@ -70,8 +69,6 @@ export default function ChatArea({
 
   const onScroll = useMemo(() => {
     return throttle((e: React.UIEvent<HTMLDivElement>) => {
-      // 如果是往上滚动，则说明是手动滚动，则需要停止自动向下滚动
-
       if (e.currentTarget.scrollTop < scrollCacheRef.current.prevScrollTop) {
         scrollCacheRef.current.needAutoScroll = false;
       }
@@ -102,7 +99,9 @@ export default function ChatArea({
                     ref={markdownRef}
                     interval={0}
                     answerType="answer"
-                    onTypedChar={throttleOnTypedChar}
+                    onTypedChar={(data) => {
+                      throttleOnTypedChar(data);
+                    }}
                     disableTyping
                   >
                     {m.content}
@@ -124,9 +123,15 @@ export default function ChatArea({
       {/* Input Form */}
       <div className="w-full max-w-4xl mx-auto flex-shrink-0">
         <form onSubmit={handleSubmit} className="relative">
-          <input
+          <textarea
             value={input}
             onChange={handleInputChange}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit(e);
+              }
+            }}
             placeholder="Message Gemini..."
             className="w-full p-4 pr-16 text-gray-800 dark:text-gray-100 bg-gray-50 dark:bg-gray-700 rounded-2xl shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
           />
