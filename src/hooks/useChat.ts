@@ -1,9 +1,13 @@
 import { useChat } from "@ai-sdk/react";
 import useInitialMessages from "./useInitialMessages";
 import { createIdGenerator } from "ai";
+import useRecentChat from "./useRecentChat";
+import { useEffect } from "react";
+import { stat } from "fs";
 
 const useChatCustom = ({ id }: { id?: string }) => {
   const { initialMessages } = useInitialMessages({ id });
+  const { recentMessages, refreshRecentMessages } = useRecentChat();
 
   const { messages, input, handleInputChange, handleSubmit, status } = useChat({
     id,
@@ -17,11 +21,23 @@ const useChatCustom = ({ id }: { id?: string }) => {
     },
   });
 
+  useEffect(() => {
+    if (status === "ready") {
+      refreshRecentMessages();
+    }
+  }, [status]);
+
+  const handleSubmitWrapper = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleSubmit(e);
+  };
+
   return {
     messages,
+    recentMessages,
     input,
     handleInputChange,
-    handleSubmit,
+    handleSubmit: handleSubmitWrapper,
     status,
   };
 };

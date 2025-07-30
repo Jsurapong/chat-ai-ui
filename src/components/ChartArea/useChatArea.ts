@@ -1,20 +1,5 @@
-import { useChat } from "@ai-sdk/react";
-import { createIdGenerator } from "ai";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Message } from "@ai-sdk/react";
-import useInitialMessages from "@/hooks/useInitialMessages";
-
-function throttle(fn: (...args: any[]) => void, delay: number) {
-  let lastTime = 0;
-
-  return (...args: unknown[]) => {
-    const now = Date.now();
-    if (now - lastTime > delay) {
-      fn(...args);
-      lastTime = now;
-    }
-  };
-}
+import { useMemo, useRef } from "react";
+import { throttle } from "lodash";
 
 function useChatArea() {
   const messageDivRef = useRef<HTMLDivElement>(null!);
@@ -30,7 +15,7 @@ function useChatArea() {
   });
 
   const throttleOnTypedChar = useMemo(() => {
-    return throttle((char) => {
+    return throttle(() => {
       if (!scrollCacheRef.current.needAutoScroll) return;
       const messageDiv = messageDivRef.current;
 
@@ -40,21 +25,22 @@ function useChatArea() {
           behavior: "smooth",
         });
       }
-    }, 10);
+    }, 50);
   }, []);
 
-  const onScroll = useMemo(() => {
-    return throttle((e: React.UIEvent<HTMLDivElement>) => {
-      if (e.currentTarget.scrollTop < scrollCacheRef.current.prevScrollTop) {
-        scrollCacheRef.current.needAutoScroll = false;
-      }
-      scrollCacheRef.current.prevScrollTop = e.currentTarget.scrollTop;
-    }, 10);
-  }, []);
+  // const onScroll = useMemo(() => {
+  //   return throttle((e: React.UIEvent<HTMLDivElement>) => {
+
+  //     // if (e.currentTarget?.scrollTop < scrollCacheRef.current.prevScrollTop) {
+  //     //   scrollCacheRef.current.needAutoScroll = false;
+  //     // }
+  //     scrollCacheRef.current.prevScrollTop = e.currentTarget?.scrollTop;
+  //   }, 50);
+  // }, []);
 
   return {
     messageDivRef,
-    onScroll,
+
     throttleOnTypedChar,
   };
 }

@@ -1,10 +1,11 @@
 import axios from "axios";
-import { useCallback, useEffect, useState } from "react";
+import { debounce } from "lodash";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type HistoryItem = { id: string; title: string };
 
 const useRecentChat = () => {
-  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [recentMessages, setRecentMessages] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadChatHistory = useCallback(async () => {
@@ -13,18 +14,27 @@ const useRecentChat = () => {
 
       const response = await axios.get("/api/history");
 
-      setHistory(response.data as HistoryItem[]);
+      setRecentMessages(response.data as HistoryItem[]);
     } catch (error) {
     } finally {
       setLoading(false);
     }
   }, []);
 
+  const debouncedLoadChatHistory = useMemo(
+    () => debounce(loadChatHistory, 2000), // 300ms delay
+    [loadChatHistory]
+  );
+
   useEffect(() => {
     loadChatHistory();
   }, []);
 
-  return { history, loading };
+  return {
+    recentMessages,
+    loading,
+    refreshRecentMessages: debouncedLoadChatHistory,
+  };
 };
 
 export default useRecentChat;

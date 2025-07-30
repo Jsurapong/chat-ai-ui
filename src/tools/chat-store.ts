@@ -1,6 +1,7 @@
 import { generateId, Message } from "ai";
 import { existsSync, mkdirSync } from "fs";
 import { writeFile, readFile } from "fs/promises";
+import { orderBy } from "lodash";
 import path from "path";
 
 export async function createChat(): Promise<string> {
@@ -36,18 +37,28 @@ export async function saveChat({
   await writeFile(getChatFile(id), content);
 }
 
-export async function getChatIds(): Promise<{ id: string; title: string }[]> {
+type Charts = {
+  id: string;
+  title: string;
+  createdAt: string;
+};
+export async function getChatIds(): Promise<Charts[]> {
   const chatDir = path.join(process.cwd(), ".chats");
   if (!existsSync(chatDir)) return [];
   const files = (await import("fs/promises")).readdir(chatDir);
-  const chatIds: { id: string; title: string }[] = [];
+  const chatIds: Charts[] = [];
   for (const file of await files) {
     if (!file.endsWith(".json")) continue;
     const id = file.replace(/\.json$/, "");
     const filePath = path.join(chatDir, file);
     try {
       const content = await readFile(filePath, "utf8");
-      const messages: Message[] = JSON.parse(content);
+      const messages: Message[] = orderBy(
+        JSON.parse(content),
+        "createdAt",
+        "asc"
+      );
+
       if (messages.length === 0) continue;
 
       const userMessages = messages.filter((i) => i.role === "user");
@@ -55,9 +66,11 @@ export async function getChatIds(): Promise<{ id: string; title: string }[]> {
       const title =
         userMessages[userMessages.length - 1]?.content?.slice(0, 30) ||
         "Untitled Chat";
-      chatIds.push({ id, title });
+      const createdAt = `${userMessages[0]?.createdAt || ""}`;
+
+      chatIds.push({ id, title, createdAt });
     } catch {
-      chatIds.push({ id, title: "Untitled Chat" });
+      chatIds.push({ id, title: "Untitled Chat", createdAt: "" });
     }
   }
   return chatIds;

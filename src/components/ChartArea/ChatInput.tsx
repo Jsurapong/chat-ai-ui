@@ -4,7 +4,7 @@ interface ChatInputProps {
   input: string;
   isLoading: boolean;
   onInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 
 export default function ChatInput({
@@ -16,7 +16,7 @@ export default function ChatInput({
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      onSubmit(e as any);
+      onSubmit(e as unknown as React.FormEvent<HTMLFormElement>);
     }
   };
   return (

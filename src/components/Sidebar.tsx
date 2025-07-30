@@ -1,12 +1,10 @@
-import {} from "next/navigation";
 import { useRouter } from "next/navigation";
 import { MessageSquarePlus } from "lucide-react";
-import useRecentChat from "@/hooks/useRecentChat";
 
-export default function Sidebar() {
+function Sidebar(props: { recentMessages: { id: string; title: string }[] }) {
   const router = useRouter();
 
-  const { history } = useRecentChat();
+  const { recentMessages } = props;
 
   return (
     <aside className="hidden md:flex flex-col w-64 bg-gray-50 dark:bg-gray-800 p-2">
@@ -28,7 +26,7 @@ export default function Sidebar() {
         </h2>
         {/* Placeholder for recent chats list */}
         <div className="mt-2 space-y-2">
-          {history.map((i) => {
+          {recentMessages.map((i) => {
             return (
               <a
                 key={i.id}
@@ -49,3 +47,5 @@ export default function Sidebar() {
     </aside>
   );
 }
+
+export default Sidebar;

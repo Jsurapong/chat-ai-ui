@@ -3,30 +3,26 @@ import DotLoading from "../DotLoading";
 import MessageItem from "./MessageItem";
 import ChatInput from "./ChatInput";
 import useChatArea from "./useChatArea";
-import useChatCustom from "@/hooks/useChat";
+import { Message } from "ai";
 
 interface ChatAreaProps {
-  id?: string;
+  messages: Message[];
+  input: string;
+  handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  status: "ready" | "streaming" | "submitted" | "error";
 }
 
-export default function ChatArea({ id }: ChatAreaProps = {}) {
-  const { messageDivRef, onScroll, throttleOnTypedChar } = useChatArea();
-
-  const { messages, input, handleInputChange, handleSubmit, status } =
-    useChatCustom({
-      id,
-    });
+export default function ChatArea(props: ChatAreaProps) {
+  const { messageDivRef, throttleOnTypedChar } = useChatArea();
+  const { messages, input, handleInputChange, handleSubmit, status } = props;
 
   const isLoading = status === "streaming" || status === "submitted";
 
   return (
     <main className="flex flex-col w-full h-screen p-4">
       {/* Message List */}
-      <div
-        className="flex-1 overflow-y-auto mb-4"
-        ref={messageDivRef}
-        onScroll={onScroll}
-      >
+      <div className="flex-1 overflow-y-auto mb-4" ref={messageDivRef}>
         <div className="max-w-4xl mx-auto px-4">
           {messages.map((message) => (
             <div key={message.id} style={{ display: false ? "none" : "block" }}>

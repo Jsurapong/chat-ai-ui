@@ -7,7 +7,7 @@ interface MessageItemProps {
   message: Message;
 
   disableTyping: boolean;
-  onTypedChar: (data: any) => void;
+  onTypedChar: (data: unknown) => void;
 }
 
 const MessageItem = memo(function MessageItem({
@@ -18,8 +18,7 @@ const MessageItem = memo(function MessageItem({
   const markdownRef = useRef<MarkdownRef>(null);
 
   const handleTypedChar = useCallback(
-    (data: any) => {
-      console.log("aaa");
+    (data: unknown) => {
       onTypedChar(data);
     },
     [onTypedChar]
